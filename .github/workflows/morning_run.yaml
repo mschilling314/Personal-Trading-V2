@@ -21,11 +21,9 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-    #   - name: Retrieve secrets
-    #     run: |
-    #       GH_TOKEN=$(echo "${{ secrets.GH_TOKEN }}")
-      - name: Print current time
-        run: date
+      - name: Retrieve secrets
+        run: |
+          GH_TOKEN=$(echo "${{ secrets.REPO_PAT }}")
 
       - name: Run trading script
         run: |
