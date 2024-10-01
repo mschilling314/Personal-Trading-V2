@@ -1,0 +1,41 @@
+name: Morning Trade Workflow
+
+on:
+  schedule:
+    - cron: '30 14 * * 1-6'  # Run daily at midnight (adjust as needed)
+
+jobs:
+  trading:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+    #   - name: Retrieve secrets
+    #     run: |
+    #       GH_TOKEN=$(echo "${{ secrets.GH_TOKEN }}")
+      - name: Print current time
+        run: date
+
+      - name: Run trading script
+        run: |
+          python morning_trade.py
+
+      - name: Update trading data file
+        run: |
+          echo "New data: $(date), AAPL, 150.0" >> trading_data.csv
+
+      - name: Commit and push changes
+        run: |
+          git add trading_data.csv
+          git commit -m "Update trading data"
+          git push origin main
