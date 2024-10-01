@@ -1,1 +1,0 @@
-# TODO: implement functions to get account info including current holdings (money and stocks), and maybe also price info (tho maybe use YFinance instead?)
