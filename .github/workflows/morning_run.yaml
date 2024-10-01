@@ -1,8 +1,9 @@
 name: Morning Trade Workflow
 
 on:
-  schedule:
-    - cron: '5 23 * * 1-6'  # Run daily at midnight (adjust as needed)
+  workflow_dispatch
+#   schedule:
+#     - cron: '5 23 * * 1-6'  # Run daily at midnight (adjust as needed)
 
 jobs:
   trading:
