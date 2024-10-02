@@ -16,7 +16,7 @@ from src.logger.logger import init_logger
 # intitialization
 ticker = os.environ["TICKER"]
 logger = init_logger()
-logger.info("Morning run started.")
+logger.info("Afternoon run started.")
 try:
     access_token = get_access_token()
 except:
