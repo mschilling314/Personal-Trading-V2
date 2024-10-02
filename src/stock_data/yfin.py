@@ -4,7 +4,7 @@ import logging
 
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(filename="../../logs/app.log", format="%(asctime)s %(levelname)s %(message)s", level=logging.DEBUG)
+logging.basicConfig(filename="logs/app.log", format="%(asctime)s %(levelname)s %(message)s", level=logging.DEBUG)
 
 
 def get_current_price(ticker: str="TQQQ") -> float:

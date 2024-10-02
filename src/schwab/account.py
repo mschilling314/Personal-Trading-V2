@@ -2,9 +2,6 @@
 Idea here is that this should deal with all things account-based.  This includes getting the account order history (ongoing and historic), positions (money and ETF), etc.
 """
 import os
-print(f"Working directory: {os.system("pwd >> logs/main_log.log")}")
-print(f"ls of ..: {os.system("ls .. >> logs/main_log.log")}")
-print(f"ls of ../..: {os.system("ls ../.. >> logs/main_log.log")}")
 import requests
 import datetime
 import pytz
@@ -12,7 +9,7 @@ import logging
 
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(filename="../../logs/app.log", format="%(asctime)s %(levelname)s %(message)s", level=logging.DEBUG)
+logging.basicConfig(filename="logs/app.log", format="%(asctime)s %(levelname)s %(message)s", level=logging.DEBUG)
 
 
 def get_transactions_from_today(access_token) -> requests.Response:
