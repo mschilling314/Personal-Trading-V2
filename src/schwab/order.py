@@ -1,9 +1,10 @@
 import os
+from typing import Literal
 import requests
 import json
 
 
-def place_market_order(access_token, quantity, instruction: str, ticker: str="TQQQ") -> requests.Response:
+def place_market_order(access_token, quantity, instruction: Literal["BUY", "SELL"], ticker: str="TQQQ") -> requests.Response:
     """
     Places a market order for an equity.
 

@@ -22,16 +22,18 @@ jobs:
 
       - name: Retrieve secrets
         run: |
-          GH_TOKEN=$(echo "${{ secrets.REPO_PAT }}")
+          GH_TOKEN=${{ secrets.REPO_PAT }}
+          Ticker=${{ env.Ticker }}
+          Schwab_refresh_token=${{ secrets.Schwab_refresh_token }}
+          Schwab_base_url=${{ env.Schwab_base_url }}
+          Schwab_acct_number=${{ secrets.Schwab_acct_number }}
+          Schwab_app_key=${{ secrets.Schwab_app_key }}
+          Schwab_app_secret=${{ secrets.Schwab_app_secret }}
+
 
       - name: Run trading script
         run: |
-          python morning_trade.py
-        
-        # fix
-    #   - name: Update trading data file
-    #     run: |
-    #       echo "New data: $(date), AAPL, 150.0" >> trading_data.csv
+          python afternoon_trade.py
 
       - name: Commit and push changes
         run: |
