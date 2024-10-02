@@ -44,5 +44,5 @@ jobs:
           git config user.name "MattBot"
           git add trading_data.sqlite
           git add logs/app.log
-          git commit -m "Update trading data"
+          git commit -m "$(Date) Afternoon Run"
           git push origin main

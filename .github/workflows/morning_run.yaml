@@ -22,7 +22,11 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Retrieve secrets
+      - name: Retrieve GitHub PAT
+        run: |
+          GH_TOKEN=${{ secrets.REPO_PAT }}
+
+      - name: Run trading script
         env:
           TICKER: ${{ secrets.TICKER }}
           SCHWAB_REFRESH_TOKEN: ${{ secrets.SCHWAB_REFRESH_TOKEN }}
@@ -30,10 +34,6 @@ jobs:
           SCHWAB_ACCT_NUMBER: ${{ secrets.SCHWAB_ACCT_NUMBER }}
           SCHWAB_APP_KEY: ${{ secrets.SCHWAB_APP_KEY }}
           SCHWAB_APP_SECRET: ${{ secrets.SCHWAB_APP_SECRET }}
-        run: |
-          GH_TOKEN=${{ secrets.REPO_PAT }}
-
-      - name: Run trading script
         run: |
           python morning_trade.py
 
@@ -43,5 +43,5 @@ jobs:
           git config user.name "MattBot"
           git add trading_data.sqlite
           git add logs/app.log
-          git commit -m "Update trading data"
+          git commit -m "$(Date) Morning Run"
           git push origin main
