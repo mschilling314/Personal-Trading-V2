@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime
-import yfinance as yf
 import pandas as pd
 import sqlite3
 from src.schwab.account import get_account_positions

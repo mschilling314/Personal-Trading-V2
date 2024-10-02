@@ -3,9 +3,9 @@ In the afternoon, we want to see if we've sold our stock.  If we haven't, we nee
 
 We also want to add transaction data to our trading_data.sqlite database, and perhaps also yfinance data?
 """
-import os
-import pandas as pd
-import sqlite3
+from os import environ
+from pandas import DataFrame
+from sqlite3 import connect
 
 from src.schwab.order import place_market_order
 from src.schwab.auth import get_access_token
@@ -14,7 +14,7 @@ from src.logger.logger import init_logger
 
 
 # intitialization
-ticker = os.environ["Ticker"]
+ticker = environ["Ticker"]
 logger = init_logger()
 logger.info("Morning run started.")
 try:
@@ -47,8 +47,8 @@ if len(txns_today) == 1:
     #         cancel_order(access_token=access_token, order_id=order["orderId"])
 
 # now we just need to update the database
-df = pd.DataFrame(txns_today)
-conn = sqlite3.connect("trading_data.sqlite")
+df = DataFrame(txns_today)
+conn = connect("trading_data.sqlite")
 df.to_sql("trading_data.sqlite", con=conn, if_exists="append")
 logger.info("Afternoon run finished.")
 

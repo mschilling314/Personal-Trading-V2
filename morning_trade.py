@@ -1,7 +1,7 @@
 """
 In the morning, we want to potentially buy stocks, and place the OCO order if we do.  BUT, we also want to check to make sure the orders go thru, and retry until they do.
 """
-import os
+from os import environ
 
 from src.schwab.auth import get_access_token
 from src.schwab.account import get_account_positions
@@ -12,7 +12,7 @@ from src.logger.logger import init_logger
 
 
 # init
-ticker = os.environ["Ticker"]
+ticker = environ["Ticker"]
 logger = init_logger()
 logger.info("Morning run started.")
 try:
