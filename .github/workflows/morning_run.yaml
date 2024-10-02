@@ -29,9 +29,9 @@ jobs:
           python morning_trade.py
         
         # fix
-      - name: Update trading data file
-        run: |
-          echo "New data: $(date), AAPL, 150.0" >> trading_data.csv
+    #   - name: Update trading data file
+    #     run: |
+    #       echo "New data: $(date), AAPL, 150.0" >> trading_data.csv
 
       - name: Commit and push changes
         run: |
