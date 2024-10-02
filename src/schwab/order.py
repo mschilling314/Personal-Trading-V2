@@ -46,6 +46,18 @@ def place_market_order(access_token, quantity, instruction: str, ticker: str="TQ
 
 
 def place_oco_order(access_token, quantity, limit_price: float, stop_limit_price: float, stop_price: float, ticker: str="TQQQ") -> requests.Response:
+    """
+    Places an OCO order, which is the strategy's underpinning, to sell in the event of loss or profit.
+
+    Inputs
+    ------
+    access_token: gotten from another function
+    quantity: how much ETF to sell
+    limit_price: the price to sell for (to profit)
+    stop_limit_price: the price that triggers loss aversion sale
+    stop_price: the price to sell the stock for in the event of loss
+    ticker: What could this be? :)
+    """
     base_url = os.environ["Schwab_base_url"]
     acct_number = os.environ["Schwab_acct_number"]
     url = f"{base_url}/accounts/{acct_number}/orders"
@@ -76,8 +88,8 @@ def place_oco_order(access_token, quantity, limit_price: float, stop_limit_price
         { 
             "orderType": "STOP_LIMIT", 
             "session": "NORMAL", 
-            "price": stop_limit_price, 
-            "stopPrice": stop_price, 
+            "price": stop_price, 
+            "stopPrice": stop_limit_price, 
             "duration": "DAY", 
             "orderStrategyType": "SINGLE", 
             "orderLegCollection": [ 
