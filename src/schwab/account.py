@@ -9,7 +9,8 @@ import logging
 
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(filename="/logs/app.log", format="%(asctime)s %(levelname)s %(message)s", level=logging.DEBUG)
+log_file_path = os.path.join(os.getcwd(), "logs", "app.log")
+logging.basicConfig(filename=log_file_path, format="%(asctime)s %(levelname)s %(message)s", level=logging.DEBUG)
 
 
 def get_transactions_from_today(access_token) -> requests.Response:
