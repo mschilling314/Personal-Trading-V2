@@ -22,8 +22,8 @@ def place_market_order(access_token, quantity, instruction: Literal["BUY", "SELL
     order_type: what kind of order to place (usually just MARKET)
     """
     logger.info(f"Placing market order to {instruction} for {quantity} of {ticker}.")
-    base_url = os.environ["Schwab_base_url"]
-    acct_number = os.environ["Schwab_acct_number"]
+    base_url = os.environ["SCHWAB_BASE_URL"]
+    acct_number = os.environ["SCHWAB_ACCT_NUMBER"]
 
     if instruction not in ["BUY", "SELL"]:
         logger.error(f"Was given a weird instruction: {instruction}")
@@ -70,8 +70,8 @@ def place_oco_order(access_token, quantity, limit_price: float, stop_limit_price
     ticker: What could this be? :)
     """
     logger.info(f"Placing OCO order to sell {quantity} of {ticker} if price reaches a high of ${limit_price} or a loss of ${stop_limit_price}.")
-    base_url = os.environ["Schwab_base_url"]
-    acct_number = os.environ["Schwab_acct_number"]
+    base_url = os.environ["SCHWAB_BASE_URL"]
+    acct_number = os.environ["SCHWAB_ACCT_NUMBER"]
     url = f"{base_url}/accounts/{acct_number}/orders"
     headers = {
         'Content-Type': 'application/json',
@@ -129,8 +129,8 @@ def cancel_order(access_token, order_id: str) -> requests.Response:
     Cancel order, mostly for EOD or emergencies.
     """
     logger.info(f"Cancelling order {order_id}")
-    base_url = os.environ["Schwab_base_url"]
-    acct_number = os.environ["Schwab_acct_number"]
+    base_url = os.environ["SCHWAB_BASE_URL"]
+    acct_number = os.environ["SCHWAB_ACCT_NUMBER"]
     url = f"{base_url}/accounts/{acct_number}/orders/{order_id}"
     headers={'Authorization': f'Bearer {access_token}'}
     response = requests.request(method="DELETE", url=url, headers=headers)

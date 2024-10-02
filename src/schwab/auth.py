@@ -16,9 +16,9 @@ def get_access_token():
     TODO: Confirm return value. 
     """
     logger.debug("Entered the get_access_token function.")
-    app_key = os.environ["Schwab_app_key"]
-    app_secret = os.environ["Schwab_app_secret"]
-    refresh_token = os.environ["Schwab_refresh_token"]
+    app_key = os.environ["SCHWAB_APP_KEY"]
+    app_secret = os.environ["SCHWAB_APP_SECRET"]
+    refresh_token = os.environ["SCHWAB_REFRESH_TOKEN"]
     headers = {'Authorization': f'Basic {base64.b64encode(bytes(f"{app_key}:{app_secret}", "utf-8")).decode("utf-8")}',
                'Content-Type': 'application/x-www-form-urlencoded'}
     data = {'grant_type': 'refresh_token', 'refresh_token': refresh_token}
@@ -37,8 +37,8 @@ def get_refresh_token(callback_url: str="https://127.0.0.1"):
     ------
     callback_url: the URL to call back to post-authorization.
     """
-    app_key = os.environ['Schwab_app_key']
-    app_secret = os.environ['Schwab_app_secret']
+    app_key = os.environ['SCHWAB_APP_KEY']
+    app_secret = os.environ['SCHWAB_APP_SECRET']
 
     auth_url = f'https://api.schwabapi.com/v1/oauth/authorize?client_id={app_key}&redirect_uri={callback_url}'
     webbrowser.open(url=auth_url, new=1)

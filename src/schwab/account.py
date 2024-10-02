@@ -17,8 +17,8 @@ def get_transactions_from_today(access_token) -> requests.Response:
     """
     For the low low price of an access_token, gives you back the transactions from that day.
     """
-    base_url = os.environ["Schwab_base_url"]
-    acct_number = os.environ["Schwab_acct_number"]
+    base_url = os.environ["SCHWAB_BASE_URL"]
+    acct_number = os.environ["SCHWAB_ACCT_NUMBER"]
     url = f"{base_url}/accounts/{acct_number}/transactions"
     today_end = datetime.datetime.now(tz=pytz.timezone("US/Eastern"))
     today_start = datetime.datetime.now(tz=pytz.timezone("US/Eastern")).replace(hour=9, minute=29, second=0)
@@ -39,8 +39,8 @@ def get_orders_from_today(access_token) -> requests.Response:
     """
     For the low low price of an access_token, gives you back the transactions from that day.
     """
-    base_url = os.environ["Schwab_base_url"]
-    acct_number = os.environ["Schwab_acct_number"]
+    base_url = os.environ["SCHWAB_BASE_URL"]
+    acct_number = os.environ["SCHWAB_ACCT_NUMBER"]
     url = f"{base_url}/accounts/{acct_number}/orders"
     today_end = datetime.datetime.now(tz=pytz.timezone("US/Eastern"))
     today_start = datetime.datetime.now(tz=pytz.timezone("US/Eastern")).replace(hour=9, minute=29, second=0)
@@ -68,8 +68,8 @@ def get_account_positions(access_token) -> dict:
            |--price: a float
     }
     """
-    base_url = os.environ["Schwab_base_url"]
-    acct_number = os.environ["Schwab_acct_number"]
+    base_url = os.environ["SCHWAB_BASE_URL"]
+    acct_number = os.environ["SCHWAB_ACCT_NUMBER"]
     url = f"{base_url}/accounts/{acct_number}"
     header = {'Authorization': f'Bearer {access_token}'}
     response = requests.get(url=url, headers=header, params={"fields": "positions"})

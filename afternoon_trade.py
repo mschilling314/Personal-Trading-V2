@@ -14,7 +14,7 @@ from src.logger.logger import init_logger
 
 
 # intitialization
-ticker = os.environ["Ticker"]
+ticker = os.environ["TICKER"]
 logger = init_logger()
 logger.info("Morning run started.")
 try:
