@@ -7,9 +7,9 @@ on:
 
 env:
   GH_TOKEN=${{ secrets.REPO_PAT }}
-  TICKER=${{ env.TICKER }}
+  TICKER=${{ secrets.TICKER }}
   SCHWAB_REFRESH_TOKEN=${{ secrets.SCHWAB_REFRESH_TOKEN }}
-  SCHWAB_BASE_URL=${{ env.SCHWAB_BASE_URL }}
+  SCHWAB_BASE_URL=${{ secrets.SCHWAB_BASE_URL }}
   SCHWAB_ACCT_NUMBER=${{ secrets.SCHWAB_ACCT_NUMBER }}
   SCHWAB_APP_KEY=${{ secrets.SCHWAB_APP_KEY }}
   SCHWAB_APP_SECRET=${{ secrets.SCHWAB_APP_SECRET }}
