@@ -17,10 +17,10 @@ def get_access_token():
                'Content-Type': 'application/x-www-form-urlencoded'}
     data = {'grant_type': 'refresh_token', 'refresh_token': refresh_token}
     resp = requests.post('https://api.schwabapi.com/v1/oauth/token', headers=headers, data=data)
-
     resp.raise_for_status()
 
-    return resp.json()
+    access_token = resp["access_token"]
+    return access_token
 
 
 def get_refresh_token(callback_url: str="https://127.0.0.1"):
