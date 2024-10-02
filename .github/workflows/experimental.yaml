@@ -23,9 +23,9 @@ jobs:
       #   run: |
       #     GH_TOKEN=$(echo "${{ secrets.REPO_PAT }}")
 
-    #   - name: Run main script
-    #     run: |
-    #       python main.py
+      - name: Run main script
+        run: |
+          python main.py
 
       # - name: Commit and push changes
       #   run: |

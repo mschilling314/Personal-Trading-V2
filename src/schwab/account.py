@@ -2,6 +2,9 @@
 Idea here is that this should deal with all things account-based.  This includes getting the account order history (ongoing and historic), positions (money and ETF), etc.
 """
 import os
+print(os.system("pwd"))
+print(os.system("ls .."))
+print(os.system("ls ../.."))
 import requests
 import datetime
 import pytz
