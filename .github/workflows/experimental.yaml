@@ -32,5 +32,6 @@ jobs:
           git config user.email "mschilling52019@gmail.com"
           git config user.name "MattBot"
           git add trading_data.csv
+          git add logs/main_log.logs
           git commit -m "Update trading data"
           git push origin main

@@ -10,4 +10,5 @@ The new strategy is to use a OCO order (one cancels the other) wherein once we b
 - Create Morning and Afternoon GitHub Actions
 - Create DST Workflow to update the execution times of GitHub Actions on specific dates (maybe make a separate repo with a global PAT???)
 - Implement Schwab Trading
-- Testing/Go Live
+- Add Logging?
+- Testing?/Go Live
