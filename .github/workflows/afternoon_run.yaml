@@ -24,12 +24,12 @@ jobs:
       - name: Retrieve secrets
         run: |
           GH_TOKEN=${{ secrets.REPO_PAT }}
-          Ticker=${{ env.Ticker }}
-          Schwab_refresh_token=${{ secrets.Schwab_refresh_token }}
-          Schwab_base_url=${{ env.Schwab_base_url }}
-          Schwab_acct_number=${{ secrets.Schwab_acct_number }}
-          Schwab_app_key=${{ secrets.Schwab_app_key }}
-          Schwab_app_secret=${{ secrets.Schwab_app_secret }}
+          Ticker=${{ env.TICKER }}
+          Schwab_refresh_token=${{ secrets.SCHWAB_REFRESH_TOKEN }}
+          Schwab_base_url=${{ env.SCHWAB_BASE_URL }}
+          Schwab_acct_number=${{ secrets.SCHWAB_ACCT_NUMBER }}
+          Schwab_app_key=${{ secrets.SCHWAB_APP_KEY }}
+          Schwab_app_secret=${{ secrets.SCHWAB_APP_SECRET }}
 
 
       - name: Run trading script
