@@ -3,14 +3,46 @@ Idea here is that this should deal with all things account-based.  This includes
 """
 import os
 import requests
+import datetime
+import pytz
 
 
-def get_transactions_from_today():
-    pass
+def get_transactions_from_today(access_token) -> requests.Response:
+    """
+    For the low low price of an access_token, gives you back the transactions from that day.
+    """
+    base_url = os.environ["Schwab_base_url"]
+    acct_number = os.environ["Schwab_acct_number"]
+    url = f"{base_url}/accounts/{acct_number}/transactions"
+    today_end = datetime.datetime.now(tz=pytz.timezone("US/Eastern"))
+    today_start = datetime.datetime.now(tz=pytz.timezone("US/Eastern")).replace(hour=9, minute=29, second=0)
+    header = {'Authorization': f'Bearer {access_token}'}
+    params = {
+        "startDate": today_start.isoformat(),
+        "endDate": today_end.isoformat(),
+        "type": "TRADE"
+    }
+    response = requests.get(url=url, headers=header, params=params)
+    return response
 
 
-def get_orders_from_today():
-    pass
+
+def get_orders_from_today(access_token) -> requests.Response:
+    """
+    For the low low price of an access_token, gives you back the transactions from that day.
+    """
+    base_url = os.environ["Schwab_base_url"]
+    acct_number = os.environ["Schwab_acct_number"]
+    url = f"{base_url}/accounts/{acct_number}/orders"
+    today_end = datetime.datetime.now(tz=pytz.timezone("US/Eastern"))
+    today_start = datetime.datetime.now(tz=pytz.timezone("US/Eastern")).replace(hour=9, minute=29, second=0)
+    header = {'Authorization': f'Bearer {access_token}'}
+    params = {
+        "fromEnteredTime": today_start.isoformat(),
+        "toEnteredTime": today_end.isoformat()
+    }
+    response = requests.get(url=url, headers=header, params=params)
+    return response
 
 
 def get_account_positions(access_token) -> dict:
