@@ -1,0 +1,36 @@
+name: Experimental Workflow
+
+on:
+  push
+
+jobs:
+  trading:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Retrieve secrets
+        run: |
+          GH_TOKEN=$(echo "${{ secrets.REPO_PAT }}")
+
+      - name: Run main script
+        run: |
+          python main.py
+
+      - name: Commit and push changes
+        run: |
+          git config user.email "mschilling52019@gmail.com"
+          git config user.name "MattBot"
+          git add trading_data.csv
+          git commit -m "Update trading data"
+          git push origin main
