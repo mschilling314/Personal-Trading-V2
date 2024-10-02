@@ -5,5 +5,5 @@ logging.basicConfig(filename="logs/main_log.log", format="%(asctime)s %(message)
 
 logger = logging.getLogger()
 
-
+logger.setLevel(logging.INFO)
 logger.info(f"Time is now {datetime.now()}")
