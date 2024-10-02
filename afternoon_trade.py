@@ -14,9 +14,13 @@ from src.logger.logger import init_logger
 
 
 # intitialization
-access_token = get_access_token()
 ticker = os.environ["Ticker"]
 logger = init_logger()
+try:
+    access_token = get_access_token()
+except:
+    logger.error("Error getting access token.")
+    exit()
 
 # retrieve account positions and transactions
 acct = get_account_positions(access_token=access_token)

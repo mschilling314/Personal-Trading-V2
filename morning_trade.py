@@ -12,9 +12,13 @@ from src.logger.logger import init_logger
 
 
 # init
-access_token = get_access_token()
 ticker = os.environ["Ticker"]
 logger = init_logger()
+try:
+    access_token = get_access_token()
+except:
+    logger.error("Error fetching access token.")
+    exit()
 
 # First, we check to see how much money we have
 money = get_account_positions(access_token=access_token)["liquidity"]
