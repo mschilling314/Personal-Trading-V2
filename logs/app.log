@@ -1,0 +1,5 @@
+2024-10-02 23:08:41,056 INFO Morning run started.
+2024-10-02 23:08:41,056 DEBUG Entered the get_access_token function.
+2024-10-02 23:08:41,057 DEBUG Starting new HTTPS connection (1): api.schwabapi.com:443
+2024-10-02 23:08:41,494 DEBUG https://api.schwabapi.com:443 "POST /v1/oauth/token HTTP/11" 400 92
+2024-10-02 23:08:41,495 CRITICAL Error getting access token.
