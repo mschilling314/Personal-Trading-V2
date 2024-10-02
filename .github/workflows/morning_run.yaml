@@ -5,14 +5,6 @@ on:
   # schedule:
   #   - cron: '30 13 * * 1-6'  # Run daily at midnight (adjust as needed)
 
-env:
-  GH_TOKEN=${{ secrets.REPO_PAT }}
-  TICKER=${{ secrets.TICKER }}
-  SCHWAB_REFRESH_TOKEN=${{ secrets.SCHWAB_REFRESH_TOKEN }}
-  SCHWAB_BASE_URL=${{ secrets.SCHWAB_BASE_URL }}
-  SCHWAB_ACCT_NUMBER=${{ secrets.SCHWAB_ACCT_NUMBER }}
-  SCHWAB_APP_KEY=${{ secrets.SCHWAB_APP_KEY }}
-  SCHWAB_APP_SECRET=${{ secrets.SCHWAB_APP_SECRET }}
 
 jobs:
   trading:
@@ -31,6 +23,13 @@ jobs:
           pip install -r requirements.txt
 
       - name: Retrieve secrets
+        env:
+          TICKER: ${{ secrets.TICKER }}
+          SCHWAB_REFRESH_TOKEN: ${{ secrets.SCHWAB_REFRESH_TOKEN }}
+          SCHWAB_BASE_URL: ${{ secrets.SCHWAB_BASE_URL }}
+          SCHWAB_ACCT_NUMBER: ${{ secrets.SCHWAB_ACCT_NUMBER }}
+          SCHWAB_APP_KEY: ${{ secrets.SCHWAB_APP_KEY }}
+          SCHWAB_APP_SECRET: ${{ secrets.SCHWAB_APP_SECRET }}
         run: |
           GH_TOKEN=${{ secrets.REPO_PAT }}
 
