@@ -1,28 +1,27 @@
 """
 Idea here is that this should deal with all things account-based.  This includes getting the account order history (ongoing and historic), positions (money and ETF), etc.
 """
-from os import getcwd, environ
-from os.path import join
-from requests import Response, get
-from datetime.datetime import now
-from pytz import timezone
+import os
+import requests
+import datetime
+import pytz
 import logging
 
 
 logger = logging.getLogger(__name__)
-log_file_path = join(getcwd(), "logs", "app.log")
+log_file_path = os.path.join(os.getcwd(), "logs", "app.log")
 logging.basicConfig(filename=log_file_path, format="%(asctime)s %(levelname)s %(message)s", level=logging.DEBUG)
 
 
-def get_transactions_from_today(access_token) -> Response:
+def get_transactions_from_today(access_token) -> requests.Response:
     """
     For the low low price of an access_token, gives you back the transactions from that day.
     """
-    base_url = environ["Schwab_base_url"]
-    acct_number = environ["Schwab_acct_number"]
+    base_url = os.environ["Schwab_base_url"]
+    acct_number = os.environ["Schwab_acct_number"]
     url = f"{base_url}/accounts/{acct_number}/transactions"
-    today_end = now(tz=timezone("US/Eastern"))
-    today_start = now(tz=timezone("US/Eastern")).replace(hour=9, minute=29, second=0)
+    today_end = datetime.datetime.now(tz=pytz.timezone("US/Eastern"))
+    today_start = datetime.datetime.now(tz=pytz.timezone("US/Eastern")).replace(hour=9, minute=29, second=0)
     logging.debug(f"Getting transactions starting at {today_start} until {today_end}.")
     header = {'Authorization': f'Bearer {access_token}'}
     params = {
@@ -30,28 +29,28 @@ def get_transactions_from_today(access_token) -> Response:
         "endDate": today_end.isoformat(),
         "type": "TRADE"
     }
-    response = get(url=url, headers=header, params=params)
+    response = requests.get(url=url, headers=header, params=params)
     logger.info(f"Schwab response to the request to get today's transactions:\n{response}")
     return response
 
 
 
-def get_orders_from_today(access_token) -> Response:
+def get_orders_from_today(access_token) -> requests.Response:
     """
     For the low low price of an access_token, gives you back the transactions from that day.
     """
-    base_url = environ["Schwab_base_url"]
-    acct_number = environ["Schwab_acct_number"]
+    base_url = os.environ["Schwab_base_url"]
+    acct_number = os.environ["Schwab_acct_number"]
     url = f"{base_url}/accounts/{acct_number}/orders"
-    today_end = now(tz=timezone("US/Eastern"))
-    today_start = now(tz=timezone("US/Eastern")).replace(hour=9, minute=29, second=0)
+    today_end = datetime.datetime.now(tz=pytz.timezone("US/Eastern"))
+    today_start = datetime.datetime.now(tz=pytz.timezone("US/Eastern")).replace(hour=9, minute=29, second=0)
     logger.debug(f"Getting orders placed starting at {today_start} and ending at {today_end}")
     header = {'Authorization': f'Bearer {access_token}'}
     params = {
         "fromEnteredTime": today_start.isoformat(),
         "toEnteredTime": today_end.isoformat()
     }
-    response = get(url=url, headers=header, params=params)
+    response = requests.get(url=url, headers=header, params=params)
     logger.debug(f"Schwab's response to the request to get today's orders:\n{response}")
     return response
 
@@ -69,11 +68,11 @@ def get_account_positions(access_token) -> dict:
            |--price: a float
     }
     """
-    base_url = environ["Schwab_base_url"]
-    acct_number = environ["Schwab_acct_number"]
+    base_url = os.environ["Schwab_base_url"]
+    acct_number = os.environ["Schwab_acct_number"]
     url = f"{base_url}/accounts/{acct_number}"
     header = {'Authorization': f'Bearer {access_token}'}
-    response = get(url=url, headers=header, params={"fields": "positions"})
+    response = requests.get(url=url, headers=header, params={"fields": "positions"})
     logger.debug(f"Schwab's response to the request for account positions:\n{response}")
     # TODO: Check to make sure response is valid
     liquidity = response["securitiesAccount"]["currentBalances"]["buyingPowerNonMarginableTrade"]

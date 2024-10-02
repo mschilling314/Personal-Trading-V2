@@ -1,17 +1,15 @@
-from os import getcwd, environ
-from os.path import join
+import os
 from typing import Literal
-from requests import request, Response
-from json import dumps
+import requests
+import json
 import logging
 
 
 logger = logging.getLogger(__name__)
-log_file_path = join(getcwd(), "logs", "app.log")
-logging.basicConfig(filename=log_file_path, format="%(asctime)s %(levelname)s %(message)s", level=logging.DEBUG)
+logging.basicConfig(filename="logs/app.log", format="%(asctime)s %(levelname)s %(message)s", level=logging.DEBUG)
 
 
-def place_market_order(access_token, quantity, instruction: Literal["BUY", "SELL"], ticker: str="TQQQ") -> Response:
+def place_market_order(access_token, quantity, instruction: Literal["BUY", "SELL"], ticker: str="TQQQ") -> requests.Response:
     """
     Places a market order for an equity.
 
@@ -24,8 +22,8 @@ def place_market_order(access_token, quantity, instruction: Literal["BUY", "SELL
     order_type: what kind of order to place (usually just MARKET)
     """
     logger.info(f"Placing market order to {instruction} for {quantity} of {ticker}.")
-    base_url = environ["Schwab_base_url"]
-    acct_number = environ["Schwab_acct_number"]
+    base_url = os.environ["Schwab_base_url"]
+    acct_number = os.environ["Schwab_acct_number"]
 
     if instruction not in ["BUY", "SELL"]:
         logger.error(f"Was given a weird instruction: {instruction}")
@@ -52,13 +50,13 @@ def place_market_order(access_token, quantity, instruction: Literal["BUY", "SELL
             ]
          }
     logger.debug(f"Here's the order placed: {order}")
-    response = request(method="POST", url=url, headers=headers, data=dumps(order))
+    response = requests.request(method="POST", url=url, headers=headers, data=json.dumps(order))
     logger.debug(f"Here's Schwab's response to placing the market order:\n{response}")
     logger.info("Market order placed.")
     return response
 
 
-def place_oco_order(access_token, quantity, limit_price: float, stop_limit_price: float, stop_price: float, ticker: str="TQQQ") -> Response:
+def place_oco_order(access_token, quantity, limit_price: float, stop_limit_price: float, stop_price: float, ticker: str="TQQQ") -> requests.Response:
     """
     Places an OCO order, which is the strategy's underpinning, to sell in the event of loss or profit.
 
@@ -72,8 +70,8 @@ def place_oco_order(access_token, quantity, limit_price: float, stop_limit_price
     ticker: What could this be? :)
     """
     logger.info(f"Placing OCO order to sell {quantity} of {ticker} if price reaches a high of ${limit_price} or a loss of ${stop_limit_price}.")
-    base_url = environ["Schwab_base_url"]
-    acct_number = environ["Schwab_acct_number"]
+    base_url = os.environ["Schwab_base_url"]
+    acct_number = os.environ["Schwab_acct_number"]
     url = f"{base_url}/accounts/{acct_number}/orders"
     headers = {
         'Content-Type': 'application/json',
@@ -120,22 +118,22 @@ def place_oco_order(access_token, quantity, limit_price: float, stop_limit_price
         ] 
         }
     logger.debug(f"The order placed looks like this:\n{order}")
-    response = request(method="POST", headers=headers, data=dumps(order))
+    response = requests.request(method="POST", headers=headers, data=json.dumps(order))
     logger.debug(f"Schwab's response to placing the OCO order is:\n{response}")
     logger.info("OCO order placed.")
     return response
 
 
-def cancel_order(access_token, order_id: str) -> Response:
+def cancel_order(access_token, order_id: str) -> requests.Response:
     """
     Cancel order, mostly for EOD or emergencies.
     """
     logger.info(f"Cancelling order {order_id}")
-    base_url = environ["Schwab_base_url"]
-    acct_number = environ["Schwab_acct_number"]
+    base_url = os.environ["Schwab_base_url"]
+    acct_number = os.environ["Schwab_acct_number"]
     url = f"{base_url}/accounts/{acct_number}/orders/{order_id}"
     headers={'Authorization': f'Bearer {access_token}'}
-    response = request(method="DELETE", url=url, headers=headers)
+    response = requests.request(method="DELETE", url=url, headers=headers)
     logger.debug(f"Schwab's response to order cancellation is:\n{response}")
     logger.info(f"Order {order_id} should be cancelled.")
     return response
