@@ -2,6 +2,11 @@ import os
 import base64
 import requests
 import webbrowser
+import logging
+
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename="../../logs/app.log", format="%(asctime)s %(levelname)s %(message)s", level=logging.DEBUG)
 
 
 def get_access_token():
@@ -10,6 +15,7 @@ def get_access_token():
 
     TODO: Confirm return value. 
     """
+    logger.debug("Entered the get_access_token function.")
     app_key = os.environ["Schwab_app_key"]
     app_secret = os.environ["Schwab_app_secret"]
     refresh_token = os.environ["Schwab_refresh_token"]
@@ -20,6 +26,7 @@ def get_access_token():
     resp.raise_for_status()
 
     access_token = resp["access_token"]
+    logger.debug("About to return from the get_access_token function.")
     return access_token
 
 
