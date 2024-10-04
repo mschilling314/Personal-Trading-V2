@@ -49,10 +49,11 @@ The new strategy is to use a OCO order (one cancels the other) wherein once we b
 Initial backtesting was promising (because I was only able to access 1 month of market data from Yahoo Finance, this was before I found AlphaVantage), in fact a bit <i>too</i> promising (2500% annualized returns with a Sharpe ratio of 1.67 and max drawdown of -6.28%).  Once I stopped daydreaming about a 25x multiplier to my wealth, I went searching for better data and found AlphaVantage, which I then used to backtest across several years, where I got the much more realistic result of a -99% gain, so I need a new strategy.  For now though, I plan to finish implementing the trading mechanisms themselves and perform refactors so that when the next idea hits I can more quickly backtest and deploy it.
 
 ## To Do List:
-- [] Create DST Workflow to update the execution times of GitHub Actions on specific dates (maybe make a separate repo with a global PAT???)
-- [] Unit testing?
-- [] Test and Debug
-- [] Go Live
-- [] Once confirmed to work, disable and come up with a better strategy
-- [] Eventual refactor, want to separate out the strategy and the tools to execute to allow for faster iteration on strategy as well as keeping it private
-- [] Refactor backtesting, want to separate data loading apparatus from backtesting initiation and handling from the models themselves
+- Create DST Workflow to update the execution times of GitHub Actions on specific dates (maybe make a separate repo with a global PAT???)
+- Unit testing?
+- Test and Debug
+- Go Live
+- Once confirmed to work, disable
+- Refactor backtesting, want to separate data loading apparatus from backtesting initiation and handling from the models themselves
+- Eventual refactor, want to separate out the strategy and the tools to execute to allow for faster iteration on strategy as well as keeping it private
+- Come up with a better strategy
