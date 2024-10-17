@@ -14,7 +14,7 @@ def _col_rename(c):
     return c.split()[1].capitalize()
 
 
-def load_data_from_yfinance(ticker: str="TQQQ"):
+def load_data_from_yfinance(ticker: str="TQQQ", interval: str="1d", start_date: datetime.date=datetime.date(2024, 1, 1), end_date=datetime.date(2024, 2, 1)) -> pd.DataFrame:
     """
     Basic loader, takes in a ticker and returns the last month of minute-by-minute data.
     TODO: Alter, want month split to be dynamic.
@@ -50,7 +50,7 @@ def get_one_month_data_from_alpha_vantage(ticker: str, interval: str, month: str
         return None
 
 
-def load_data_from_alpha_vantage(ticker: str="TQQQ", interval: str="1min", start_date: datetime.date=datetime.date(2015, 1, 1), end_date: datetime.date=datetime.date(2020,1,1)):
+def load_data_from_alpha_vantage(ticker: str="TQQQ", interval: str="1min", start_date: datetime.date=datetime.date(2015, 1, 1), end_date: datetime.date=datetime.date(2020,1,1)) -> pd.DataFrame:
     """
     Load data from AlphaVantage.  Useful for longer-running dense data.
     TODO: Fix data, right now appending will cause the DF to write column names over and over
