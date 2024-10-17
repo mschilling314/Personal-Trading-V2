@@ -14,28 +14,40 @@ def _col_rename(c):
     return c.split()[1].capitalize()
 
 
+def _find_prior_monday(date_of_interest: datetime.date) -> datetime.date:
+    cursor = date_of_interest
+    while not cursor.weekday() == 0:
+        cursor -= datetime.timedelta(days=1)
+    return cursor
+
+
+def _get_one_week_yfinance(ticker: str, interval: str, start_date: datetime.date, end_date: datetime.date) -> pd.DataFrame:
+    data = yf.download(tickers=ticker, start=start_date, end=end_date, interval=interval)
+    return pd.DataFrame(data)
+
+
 def load_data_from_yfinance(ticker: str="TQQQ", interval: str="1d", start_date: datetime.date=datetime.date(2024, 1, 1), end_date=datetime.date(2024, 2, 1)) -> pd.DataFrame:
     """
     Basic loader, takes in a ticker and returns the last month of minute-by-minute data.
-    TODO: Alter, want month split to be dynamic.
     """
     file_name = "datasets/" + ticker + "_data.csv"
     try:
+        # TODO: More complex flow wanted here, date to check and see if the data is up to date.  If not, update.  or, delete?
         data = pd.read_csv(file_name, parse_dates=True, index_col="Datetime")
         print(f"\nSuccessful load of {ticker} from CSV. \n")
     except:
-        data_1 = yf.download(ticker, start="2024-09-03", end="2024-09-09", interval="1m")
-        data_2 = yf.download(ticker, start="2024-09-09", end="2024-09-15", interval="1m")
-        data_3 = yf.download(ticker, start="2024-09-15", end="2024-09-21", interval="1m")
-        data_4 = yf.download(ticker, start="2024-09-21", end="2024-09-27", interval="1m")
-        data_5 = yf.download(ticker, start="2024-09-27", end="2024-10-02", interval="1m")
-        data = pd.concat([data_1, data_2, data_3, data_4, data_5])
+        datas = []
+        cursor_start = _find_prior_monday(end_date)
+        datas.append(_get_one_week_yfinance(ticker, interval=interval, start_date=cursor_start, end_date=end_date))
+        while cursor_start >= start_date and end_date - cursor_start < datetime.timedelta(days=30):
+            datas.append(_get_one_week_yfinance(ticker, interval, cursor_start, cursor_start + datetime.timedelta(6)))
+        data = pd.concat(datas)
         data.to_csv(file_name)
         print(f"\nSuccessful load of {ticker} from YF. \n")
     return data
 
 
-def get_one_month_data_from_alpha_vantage(ticker: str, interval: str, month: str):
+def _get_one_month_data_from_alpha_vantage(ticker: str, interval: str, month: str):
     """
     Gets one month of data from AlphaVantage's API.
     """
@@ -68,7 +80,7 @@ def load_data_from_alpha_vantage(ticker: str="TQQQ", interval: str="1min", start
             cursor = datetime.date(year=cursor.year+1, month=1, day=1)
         else:
             cursor = datetime.date(year=cursor.year, month=cursor.month+1, day=1)
-        data = get_one_month_data_from_alpha_vantage(ticker=ticker, interval=interval, month=month)
+        data = _get_one_month_data_from_alpha_vantage(ticker=ticker, interval=interval, month=month)
         if data.empty:
             # Indicates the API failed for some reason, but want to fail gracefully (i.e. not lose a ton of data being written)
             break
