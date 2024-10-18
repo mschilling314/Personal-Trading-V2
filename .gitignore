@@ -1,2 +1,5 @@
 testing/local/*
 localsetup.sh
+__pycache__
+backtest/datasets/
+backtest/results/

@@ -2,7 +2,7 @@ import datetime
 import backtesting
 from data_loaders import load_data_from_yfinance
 from data_loaders import load_data_from_alpha_vantage
-import models as modelz
+from models.VolatilityLongStrategy import VolatilityLongStrategy
 
 
 def execute_backtest(data, strat, ticker: str="TQQQ"):
@@ -22,7 +22,7 @@ def execute_backtest_v2(data, strat, start, end, ticker: str="TQQQ", money=10000
     return stats["Equity Final [$]"]
 
 
-def orchestrate(data_specs: dict, model: backtesting.Strategy, results_directory: str="./backtesting/results/") -> None:
+def orchestrate(data_specs: dict, model: backtesting.Strategy, results_directory: str="./backtest/results/") -> None:
     """
     Create a new backtesting flow.  Flow should go:
     1. Load data -> provide flexibitility to user, data is then passed off to specified data loader
@@ -36,12 +36,15 @@ def orchestrate(data_specs: dict, model: backtesting.Strategy, results_directory
     results_directory: where you'd like the results to be stored for a given test.  Recommended to extend path from default if executing multiple backtests in parallel.
     """
     try:
+        print(data_specs)
         loader = data_specs["loader"]
-        data = loader(ticker=data_specs["ticker"], interval=data_specs["interval"], start_date=data_specs["start_date"], end_date=data_specs["end_date"])
-    except:
-        data = load_data_from_yfinance()
+        datas = loader(ticker=data_specs["ticker"], interval=data_specs["interval"], start_date=data_specs["start_date"], end_date=data_specs["end_date"])
+    except KeyError as ke:
+        print(f"Loading from YFinance because we encountered {ke}")
+        datas = load_data_from_yfinance()
     finally:
-        bt = backtesting.Backtest(data=data, strategy=model, exclusive_orders=True, cash=10000)
+        print(datas)
+        bt = backtesting.Backtest(data=datas, strategy=model, exclusive_orders=True, cash=10000)
         stats = bt.run()
         stats.to_csv(f"{results_directory}{model.__name__}_results.csv")
         stats.to_csv(f"{results_directory}{model.__name__}_trades.csv")
@@ -50,5 +53,5 @@ def orchestrate(data_specs: dict, model: backtesting.Strategy, results_directory
 
 
 if __name__=="__main__":
-    data_specs = {"loader": load_data_from_alpha_vantage, "ticker": "TQQQ", "interval": "1m", "start_date": datetime.date(2024,1,1), "end_date": datetime.date(2024,2,1)}
-    orchestrate(data_specs=data_specs, model=modelz.VolatilityLongStrategy.VolatilityLongStrategy)
+    data_specs = {"loader": load_data_from_alpha_vantage, "ticker": "TQQQ", "interval": "60min", "start_date": datetime.date(2024,1,1), "end_date": datetime.date(2024,8,1)}
+    orchestrate(data_specs=data_specs, model=VolatilityLongStrategy)

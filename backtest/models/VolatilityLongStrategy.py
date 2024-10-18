@@ -17,6 +17,9 @@ LOSS_AVERSION_PERCENT = 0.01
 
 
 class VolatilityLongStrategy(backtesting.Strategy):
+    """
+    Basically implements a stop-loss and limit order.
+    """
     buy_price = 0
 
     def init(self):
