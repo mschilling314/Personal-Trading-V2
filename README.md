@@ -54,6 +54,5 @@ Initial backtesting was promising (because I was only able to access 1 month of 
 - Test and Debug
 - Go Live
 - Once confirmed to work, disable
-- Refactor backtesting, want to separate data loading apparatus from backtesting initiation and handling from the models themselves
 - Eventual refactor, want to separate out the strategy and the tools to execute to allow for faster iteration on strategy as well as keeping it private
 - Come up with a better strategy

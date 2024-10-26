@@ -1,8 +1,11 @@
 import datetime
 import backtesting
+import pandas as pd
 from data_loaders import load_data_from_yfinance
 from data_loaders import load_data_from_alpha_vantage
-from models.VolatilityLongStrategy import VolatilityLongStrategy
+from models.CoinFlip import CoinFlip
+
+SCHEMA = {"Open": float, "High": float, "Low": float, "Close": float, "Volume": float}
 
 
 def execute_backtest(data, strat, ticker: str="TQQQ"):
@@ -36,22 +39,23 @@ def orchestrate(data_specs: dict, model: backtesting.Strategy, results_directory
     results_directory: where you'd like the results to be stored for a given test.  Recommended to extend path from default if executing multiple backtests in parallel.
     """
     try:
-        print(data_specs)
         loader = data_specs["loader"]
         datas = loader(ticker=data_specs["ticker"], interval=data_specs["interval"], start_date=data_specs["start_date"], end_date=data_specs["end_date"])
     except KeyError as ke:
         print(f"Loading from YFinance because we encountered {ke}")
         datas = load_data_from_yfinance()
     finally:
-        print(datas)
-        bt = backtesting.Backtest(data=datas, strategy=model, exclusive_orders=True, cash=10000)
+        datas = datas.astype(dtype=SCHEMA)
+        datas.index = pd.to_datetime(datas.index)
+        bt = backtesting.Backtest(data=datas, strategy=model, exclusive_orders=True)
         stats = bt.run()
         stats.to_csv(f"{results_directory}{model.__name__}_results.csv")
         stats.to_csv(f"{results_directory}{model.__name__}_trades.csv")
         bt.plot(filename=f"{results_directory}{model.__name__}_graphs.html", open_browser=False)
+        print("Backtesting has concluded.")
 
 
 
 if __name__=="__main__":
-    data_specs = {"loader": load_data_from_alpha_vantage, "ticker": "TQQQ", "interval": "60min", "start_date": datetime.date(2024,1,1), "end_date": datetime.date(2024,8,1)}
-    orchestrate(data_specs=data_specs, model=VolatilityLongStrategy)
+    data_specs = {"loader": load_data_from_alpha_vantage, "ticker": "TQQQ", "interval": "1min", "start_date": datetime.date(2020,1,1), "end_date": datetime.date(2024,10,1)}
+    orchestrate(data_specs=data_specs, model=CoinFlip)

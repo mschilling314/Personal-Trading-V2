@@ -62,7 +62,7 @@ def _get_one_month_data_from_alpha_vantage(api_key: str, ticker: str, interval: 
         pd_data = pd.DataFrame(data[key_to_access])
         return pd_data
     except Exception as e:
-        print(e)
+        print(data)
         return pd.DataFrame()
 
 
@@ -94,6 +94,7 @@ def load_data_from_alpha_vantage(ticker: str="TQQQ", interval: str="1min", start
             cursor = datetime.date(year=cursor.year, month=cursor.month+1, day=1)
         data = _get_one_month_data_from_alpha_vantage(api_key=api_key, ticker=ticker, interval=interval, month=month)
         if data.empty:
+            print(data)
             raise Exception(f"AlphaVantage API has failed.  Last call used {month}")
         data = data.transpose().rename(_col_rename, axis='columns')
         data.index.name = "Datetime"
