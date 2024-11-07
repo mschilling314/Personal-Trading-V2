@@ -4,8 +4,6 @@ import yfinance as yf
 import pandas as pd
 import datetime
 import os
-import yfinance as yf
-import pandas as pd
 
 
 def _col_rename(c):
