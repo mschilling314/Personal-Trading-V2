@@ -50,7 +50,7 @@ def load_data_from_yfinance(ticker: str="TQQQ", interval: str="1m", start_date: 
     return data.sort_index(ascending=False)
 
 
-def _get_one_month_data_from_alpha_vantage(api_key: str, ticker: str, interval: str, month: str):
+def _get_one_month_data_from_alpha_vantage(api_key: str, ticker: str, interval: str, month: str) -> pd.DataFrame:
     """
     Gets one month of data from AlphaVantage's API.
     """
