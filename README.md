@@ -56,4 +56,5 @@ Initial backtesting was promising (because I was only able to access 1 month of 
 - Once confirmed to work, disable
 - Eventual refactor, want to separate out the strategy and the tools to execute to allow for faster iteration on strategy as well as keeping it private
 - Rewrite requests to use .get, .post, or .delete methods instead of .request?
+- Create adapter class to enable model classes to be directly deployed to live trading environments following backtesting without code modification
 - Come up with a better strategy
