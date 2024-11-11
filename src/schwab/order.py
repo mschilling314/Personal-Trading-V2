@@ -50,7 +50,7 @@ def place_market_order(access_token, quantity, instruction: Literal["BUY", "SELL
             ]
          }
     logger.debug(f"Here's the order placed: {order}")
-    response = requests.request(method="POST", url=url, headers=headers, data=json.dumps(order))
+    response = requests.post(url=url, headers=headers, data=json.dumps(order))
     logger.debug(f"Here's Schwab's response to placing the market order:\n{response}")
     logger.info("Market order placed.")
     return response
@@ -118,7 +118,7 @@ def place_oco_order(access_token, quantity, limit_price: float, stop_limit_price
         ] 
         }
     logger.debug(f"The order placed looks like this:\n{order}")
-    response = requests.request(method="POST", headers=headers, data=json.dumps(order))
+    response = requests.post(headers=headers, data=json.dumps(order))
     logger.debug(f"Schwab's response to placing the OCO order is:\n{response}")
     logger.info("OCO order placed.")
     return response
@@ -133,7 +133,7 @@ def cancel_order(access_token, order_id: str) -> requests.Response:
     acct_number = os.environ["SCHWAB_ACCT_NUMBER"]
     url = f"{base_url}/accounts/{acct_number}/orders/{order_id}"
     headers={'Authorization': f'Bearer {access_token}'}
-    response = requests.request(method="DELETE", url=url, headers=headers)
+    response = requests.delete(url=url, headers=headers)
     logger.debug(f"Schwab's response to order cancellation is:\n{response}")
     logger.info(f"Order {order_id} should be cancelled.")
     return response
