@@ -58,3 +58,7 @@ Initial backtesting was promising (because I was only able to access 1 month of 
 - Rewrite requests to use .get, .post, or .delete methods instead of .request?
 - Create adapter class to enable model classes to be directly deployed to live trading environments following backtesting without code modification
 - Come up with a better strategy
+- Rewrite YFinance loader to handle:
+    - Broader use cases (differing intervals)
+    - Handling of short intervals in background (i.e., for 1m interval, make sure it fits the 30-day constraint, fetch fully the last 30 days of data)
+        - probably overthinking this, try just timedelta of 30 days...
