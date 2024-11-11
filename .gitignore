@@ -3,3 +3,4 @@ localsetup.sh
 __pycache__
 backtest/datasets/
 backtest/results/
+Pipfile.lock
