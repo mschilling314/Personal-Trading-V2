@@ -51,9 +51,13 @@ Initial backtesting was promising (because I was only able to access 1 month of 
 ## To Do List:
 - Create DST Workflow to update the execution times of GitHub Actions on specific dates (maybe make a separate repo with a global PAT???)
 - Unit testing?
-- Test and Debug
-- Go Live
-- Once confirmed to work, disable
+- Live Testing
+    - Tests needed to perform:
+        - Ensure refresh token is acquireable
+        - Trading flow (end-to-end)
+            - Ensure that orders can be placed
+            - Ensure account lookup works properly
+    - Once confirmed to work, disable
 - Create adapter class to enable model classes to be directly deployed to live trading environments following backtesting without code modification
     - issue:  new adapter class needed for each brokerage supported
 - Come up with a better strategy
@@ -62,6 +66,18 @@ Initial backtesting was promising (because I was only able to access 1 month of 
     - Handling of short intervals in background (i.e., for 1m interval, make sure it fits the 30-day constraint, fetch fully the last 30 days of data)
         - probably overthinking this, try just timedelta of 30 days...
 - Decide on Object-oriented refactor (store things like auth token, base_url, etc in fields initialized once instead of referencing from environ vars every time)
+    - Possible option:
+        - Class SchwabTrader
+            - Responsible for actually interacting with Schwab's API endpoints
+            - encapsulates important re-used data such as auth tokens, base_url, account_id, etc enabling you to not constantly use os.environ
+            - Still provides Pythonic order access
+            - likely to be a very long class once fully implemented though, may sacrifice readability :/
+        - Class Positions
+            - Responsible for holding data on positions
+            - Could be a field of SchwabTrader
+        - Class Order/Transaction
+            - Really just a transaction data record, may not be useful though
+
 - Eventual C++ refactor (V3)?
     - Pros: 
         - possible performance boost, step into HFT space

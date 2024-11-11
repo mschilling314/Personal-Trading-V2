@@ -16,6 +16,8 @@ logging.basicConfig(filename=log_file_path, format="%(asctime)s %(levelname)s %(
 def get_transactions_from_today(access_token) -> requests.Response:
     """
     For the low low price of an access_token, gives you back the transactions from that day.
+
+    TODO: refactor this to return an orders object of some sort instead
     """
     base_url = os.environ["SCHWAB_BASE_URL"]
     acct_number = os.environ["SCHWAB_ACCT_NUMBER"]
@@ -38,6 +40,8 @@ def get_transactions_from_today(access_token) -> requests.Response:
 def get_orders_from_today(access_token) -> requests.Response:
     """
     For the low low price of an access_token, gives you back the transactions from that day.
+
+    TODO: refactor this to return an orders object of some sort instead
     """
     base_url = os.environ["SCHWAB_BASE_URL"]
     acct_number = os.environ["SCHWAB_ACCT_NUMBER"]
