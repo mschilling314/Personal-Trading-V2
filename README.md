@@ -54,6 +54,11 @@ Initial backtesting was promising (because I was only able to access 1 month of 
 - Test and Debug
 - Go Live
 - Once confirmed to work, disable
-- Refactor backtesting, want to separate data loading apparatus from backtesting initiation and handling from the models themselves
 - Eventual refactor, want to separate out the strategy and the tools to execute to allow for faster iteration on strategy as well as keeping it private
+- Rewrite requests to use .get, .post, or .delete methods instead of .request?
+- Create adapter class to enable model classes to be directly deployed to live trading environments following backtesting without code modification
 - Come up with a better strategy
+- Rewrite YFinance loader to handle:
+    - Broader use cases (differing intervals)
+    - Handling of short intervals in background (i.e., for 1m interval, make sure it fits the 30-day constraint, fetch fully the last 30 days of data)
+        - probably overthinking this, try just timedelta of 30 days...
