@@ -44,7 +44,25 @@ class SchwabClient:
         return access_token
 
 
-    def place_market_order(self, quantity, instruction: Literal["BUY", "SELL"], ticker: str="TQQQ") -> requests.Response:
+    def place_generic_order(self, order: dict) -> requests.Response:
+        """
+        Meant to place any generic order.  Somewhat of a helper function for other order types, or to provide complete control to the user.
+        
+        WARNING: currently doesn't check to ensure order is valid first.
+        """
+        logger.info(f"Placing generic order.")
+        url = f"{self.base_url}/accounts/{self.acct_number}/orders"
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {self.access_token}'
+        }
+        logger.debug(f"Here's the order placed\n{order}")
+        response = requests.post(url=url, headers=headers, data=json.dumps(order))
+        logger.debug(f"Schwab's response to the order was:\n{response}")
+        return response
+
+
+    def place_market_order(self, quantity: float, instruction: Literal["BUY", "SELL"], ticker: str="TQQQ") -> requests.Response:
         """
         Places a market order for an equity.
 
@@ -62,11 +80,7 @@ class SchwabClient:
             logger.error(f"Was given a weird instruction: {instruction}")
             raise Exception("Invalid instruction!")
         
-        url = f"{self.base_url}/accounts/{self.acct_number}/orders"
-        headers = {
-            'Content-Type': 'application/json',
-            'Authorization': f'Bearer {self.access_token}'
-        }
+        
         order = {"orderType": "MARKET",
             "session": "NORMAL",
             "duration": "DAY",
@@ -82,14 +96,10 @@ class SchwabClient:
                 }
                 ]
             }
-        logger.debug(f"Here's the order placed: {order}")
-        response = requests.post(url=url, headers=headers, data=json.dumps(order))
-        logger.debug(f"Here's Schwab's response to placing the market order:\n{response}")
-        logger.info("Market order placed.")
-        return response
+        return self.place_generic_order(order)
 
 
-    def place_oco_order(self, quantity, limit_price: float, stop_limit_price: float, stop_price: float, ticker: str="TQQQ") -> requests.Response:
+    def place_oco_order(self, quantity: float, limit_price: float, stop_limit_price: float, stop_price: float, ticker: str="TQQQ") -> requests.Response:
         """
         Places an OCO order, which is the strategy's underpinning, to sell in the event of loss or profit.
 
@@ -103,11 +113,7 @@ class SchwabClient:
         ticker: What could this be? :)
         """
         logger.info(f"Placing OCO order to sell {quantity} of {ticker} if price reaches a high of ${limit_price} or a loss of ${stop_limit_price}.")
-        url = f"{self.base_url}/accounts/{self.acct_number}/orders"
-        headers = {
-            'Content-Type': 'application/json',
-            'Authorization': f'Bearer {self.access_token}'
-        }
+        
         order = { 
             "orderStrategyType": "OCO", 
             "childOrderStrategies": [ 
@@ -148,11 +154,7 @@ class SchwabClient:
             } 
             ] 
             }
-        logger.debug(f"The order placed looks like this:\n{order}")
-        response = requests.post(url=url, headers=headers, data=json.dumps(order))
-        logger.debug(f"Schwab's response to placing the OCO order is:\n{response}")
-        logger.info("OCO order placed.")
-        return response
+        return self.place_generic_order(order)
 
 
     def cancel_order(self, order_id: str) -> requests.Response:
@@ -167,78 +169,77 @@ class SchwabClient:
         logger.info(f"Order {order_id} should be cancelled.")
         return response
     
+        
+    def get_transactions_from_today(self) -> requests.Response:
+        """
+        For the low low price of an access_token, gives you back the transactions from that day.
 
-def get_transactions_from_today(self) -> requests.Response:
-    """
-    For the low low price of an access_token, gives you back the transactions from that day.
-
-    TODO: refactor this to return an orders object of some sort instead
-    """
-    url = f"{self.base_url}/accounts/{self.acct_number}/transactions"
-    today_end = datetime.datetime.now(tz=pytz.timezone("US/Eastern"))
-    today_start = datetime.datetime.now(tz=pytz.timezone("US/Eastern")).replace(hour=9, minute=29, second=0)
-    logging.debug(f"Getting transactions starting at {today_start} until {today_end}.")
-    header = {'Authorization': f'Bearer {self.access_token}'}
-    params = {
-        "startDate": today_start.isoformat(),
-        "endDate": today_end.isoformat(),
-        "type": "TRADE"
-    }
-    response = requests.get(url=url, headers=header, params=params)
-    logger.info(f"Schwab response to the request to get today's transactions:\n{response}")
-    return response
-
-
-
-def get_orders_from_today(self) -> requests.Response:
-    """
-    For the low low price of an access_token, gives you back the transactions from that day.
-
-    TODO: refactor this to return an orders object of some sort instead
-    """
-    url = f"{self.base_url}/accounts/{self.acct_number}/orders"
-    today_end = datetime.datetime.now(tz=pytz.timezone("US/Eastern"))
-    today_start = datetime.datetime.now(tz=pytz.timezone("US/Eastern")).replace(hour=9, minute=29, second=0)
-    logger.debug(f"Getting orders placed starting at {today_start} and ending at {today_end}")
-    header = {'Authorization': f'Bearer {self.access_token}'}
-    params = {
-        "fromEnteredTime": today_start.isoformat(),
-        "toEnteredTime": today_end.isoformat()
-    }
-    response = requests.get(url=url, headers=header, params=params)
-    logger.debug(f"Schwab's response to the request to get today's orders:\n{response}")
-    return response
+        TODO: refactor this to return an orders object of some sort instead
+        """
+        url = f"{self.base_url}/accounts/{self.acct_number}/transactions"
+        today_end = datetime.datetime.now(tz=pytz.timezone("US/Eastern"))
+        today_start = datetime.datetime.now(tz=pytz.timezone("US/Eastern")).replace(hour=9, minute=29, second=0)
+        logging.debug(f"Getting transactions starting at {today_start} until {today_end}.")
+        header = {'Authorization': f'Bearer {self.access_token}'}
+        params = {
+            "startDate": today_start.isoformat(),
+            "endDate": today_end.isoformat(),
+            "type": "TRADE"
+        }
+        response = requests.get(url=url, headers=header, params=params)
+        logger.info(f"Schwab response to the request to get today's transactions:\n{response}")
+        return response
 
 
-def get_account_positions(self) -> dict:
-    """
-    Given the access token, will return the amount of money you can use to buy stock, and the stocks you own.
+    def get_orders_from_today(self) -> requests.Response:
+        """
+        For the low low price of an access_token, gives you back the transactions from that day.
 
-    Return is structured as a dictionary like so:
-    {
-        liquidity: a float
-        positions:
-        |--ticker: a string
-           |--quantity: hopefully a float
-           |--price: a float
-    }
-    """
-    url = f"{self.base_url}/accounts/{self.acct_number}"
-    header = {'Authorization': f'Bearer {self.access_token}'}
-    response = requests.get(url=url, headers=header, params={"fields": "positions"})
-    logger.debug(f"Schwab's response to the request for account positions:\n{response}")
-    # TODO: Check to make sure response is valid
-    liquidity = response["securitiesAccount"]["currentBalances"]["buyingPowerNonMarginableTrade"]
-    logger.debug(f"Stored liquidity: {liquidity}")
-    positions = response["securitiesAccount"]["positions"]
-    logger.debug(f"Positions object type: {type(positions)}")
-    positions_dict = {}
-    for position in positions:
-        ticker = position["instrument"]["symbol"]
-        quantity = position["longQuantity"]
-        price = position["marketValue"]
-        positions_dict[ticker] = {"quantity": quantity, "price": price}
-        logger.debug(f"Stored position with key {ticker} and value {positions_dict[ticker]}.")
-    ret_obj = {"liquidity": liquidity, "positions": positions_dict}
-    logger.debug(f"Will return:\n{ret_obj}")
-    return ret_obj
+        TODO: refactor this to return an orders object of some sort instead
+        """
+        url = f"{self.base_url}/accounts/{self.acct_number}/orders"
+        today_end = datetime.datetime.now(tz=pytz.timezone("US/Eastern"))
+        today_start = datetime.datetime.now(tz=pytz.timezone("US/Eastern")).replace(hour=9, minute=29, second=0)
+        logger.debug(f"Getting orders placed starting at {today_start} and ending at {today_end}")
+        header = {'Authorization': f'Bearer {self.access_token}'}
+        params = {
+            "fromEnteredTime": today_start.isoformat(),
+            "toEnteredTime": today_end.isoformat()
+        }
+        response = requests.get(url=url, headers=header, params=params)
+        logger.debug(f"Schwab's response to the request to get today's orders:\n{response}")
+        return response
+
+
+    def get_account_positions(self) -> dict:
+        """
+        Given the access token, will return the amount of money you can use to buy stock, and the stocks you own.
+
+        Return is structured as a dictionary like so:
+        {
+            liquidity: a float
+            positions:
+            |--ticker: a string
+            |--quantity: hopefully a float
+            |--price: a float
+        }
+        """
+        url = f"{self.base_url}/accounts/{self.acct_number}"
+        header = {'Authorization': f'Bearer {self.access_token}'}
+        response = requests.get(url=url, headers=header, params={"fields": "positions"})
+        logger.debug(f"Schwab's response to the request for account positions:\n{response}")
+        # TODO: Check to make sure response is valid
+        liquidity = response["securitiesAccount"]["currentBalances"]["buyingPowerNonMarginableTrade"]
+        logger.debug(f"Stored liquidity: {liquidity}")
+        positions = response["securitiesAccount"]["positions"]
+        logger.debug(f"Positions object type: {type(positions)}")
+        positions_dict = {}
+        for position in positions:
+            ticker = position["instrument"]["symbol"]
+            quantity = position["longQuantity"]
+            price = position["marketValue"]
+            positions_dict[ticker] = {"quantity": quantity, "price": price}
+            logger.debug(f"Stored position with key {ticker} and value {positions_dict[ticker]}.")
+        ret_obj = {"liquidity": liquidity, "positions": positions_dict}
+        logger.debug(f"Will return:\n{ret_obj}")
+        return ret_obj
