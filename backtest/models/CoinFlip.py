@@ -14,4 +14,4 @@ class CoinFlip(backtesting.Strategy):
         if random.random() < 0.5:
             self.buy()
         else:
-            self.sell
+            self.sell()

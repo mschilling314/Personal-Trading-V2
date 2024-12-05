@@ -1,3 +1,4 @@
+import io
 import time
 import requests
 import yfinance as yf
@@ -24,7 +25,7 @@ def _get_one_week_yfinance(ticker: str, interval: str, start_date: datetime.date
     return pd.DataFrame(data)
 
 
-def load_data_from_yfinance(ticker: str="TQQQ", interval: str="1m", start_date: datetime.date=datetime.date(2024, 1, 1), end_date=datetime.date(2024, 2, 1)) -> pd.DataFrame:
+def load_data_from_yfinance(ticker: str="TQQQ", interval: str="1m", start_date: datetime.date=datetime.date(2024, 1, 1), end_date=datetime.date(2024, 12, 1)) -> pd.DataFrame:
     """
     Basic loader, takes in a ticker and returns the last month of minute-by-minute data.
     """
@@ -48,13 +49,25 @@ def load_data_from_yfinance(ticker: str="TQQQ", interval: str="1m", start_date: 
     return data.sort_index(ascending=False)
 
 
-def _get_one_month_data_from_alpha_vantage(api_key: str, ticker: str, interval: str, month: str) -> pd.DataFrame:
+def load_day_data_yfinance(ticker: str="BTC-USD", start_date: datetime.date=datetime.date(2016, 1, 1), end_date: datetime.date=datetime.date(2024, 12, 1)) -> pd.DataFrame:
+    btc_ticker = yf.Ticker(ticker=ticker)
+    data = pd.DataFrame(btc_ticker.history(start=start_date, end=end_date, interval="1d"))
+    data = data.sort_index(ascending=True)
+    file_name = "backtest/datasets/" + ticker + "_data.csv"
+    data.to_csv(file_name)
+    # print(f"Successful load of {ticker} from YFinance for daily data between {start} and {end}.\n")
+    return data
+
+
+
+def _get_one_month_data_from_alpha_vantage(data_function: str, api_key: str, ticker: str, interval: str, month: str) -> pd.DataFrame:
     """
     Gets one month of data from AlphaVantage's API.
     """
     try:
-        url = f"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={ticker}&interval={interval}&apikey={api_key}&month={month}&outputsize=full&extended_hours=false"
-        response = requests.get(url)
+        url = "https://www.alphavantage.co/query"
+        params = {"function": data_function, "symbol": ticker, "interval": interval, "apikey": api_key, "month": month, "outputsize": "full", "extended_hours": "false"}
+        response = requests.get(url, params=params)
         data = response.json()
         key_to_access = f"Time Series ({interval})"
         pd_data = pd.DataFrame(data[key_to_access])
@@ -64,9 +77,10 @@ def _get_one_month_data_from_alpha_vantage(api_key: str, ticker: str, interval: 
         return pd.DataFrame()
 
 
-def load_data_from_alpha_vantage(ticker: str="TQQQ", interval: str="1min", start_date: datetime.date=datetime.date(2015, 1, 1), end_date: datetime.date=datetime.date(2020,1,1)) -> pd.DataFrame:
+def load_stock_data_from_alpha_vantage(data_function: str="TIME_SERIES_INTRADAY", ticker: str="TQQQ", interval: str="1min", start_date: datetime.date=datetime.date(2015, 1, 1), end_date: datetime.date=datetime.date(2020,1,1)) -> pd.DataFrame:
     """
     Load data from AlphaVantage.  Useful for longer-running dense data.
+    TODO:  fix so data_function works with non-default arguments
     
     Inputs:
     ticker: from NASDAQ
@@ -90,7 +104,7 @@ def load_data_from_alpha_vantage(ticker: str="TQQQ", interval: str="1min", start
             cursor = datetime.date(year=cursor.year+1, month=1, day=1)
         else:
             cursor = datetime.date(year=cursor.year, month=cursor.month+1, day=1)
-        data = _get_one_month_data_from_alpha_vantage(api_key=api_key, ticker=ticker, interval=interval, month=month)
+        data = _get_one_month_data_from_alpha_vantage(data_function=data_function, api_key=api_key, ticker=ticker, interval=interval, month=month)
         if data.empty:
             print(data)
             raise Exception(f"AlphaVantage API has failed.  Last call used {month}")
@@ -104,5 +118,22 @@ def load_data_from_alpha_vantage(ticker: str="TQQQ", interval: str="1min", start
     return df
 
 
+def get_daily_crypto_data(data_function: str="DIGITAL_CURRENCY_DAILY", symbol: str="BTC", market: str="USD") -> pd.DataFrame:
+    api_key = os.environ["ALPHA_VANTAGE_API_KEY"]
+    filename = f"backtest/datasets/{symbol}_data.csv"
+
+    url = "https://www.alphavantage.co/query"
+    params = {"function": data_function, "symbol": symbol, "market": market, "apikey": api_key, "datatype": "csv"}
+    response = requests.get(url, params=params)
+    
+    df = pd.read_csv(io.StringIO(response.text), index_col="timestamp").sort_index(ascending=False)
+    df.columns = df.columns.str.capitalize()
+    df.to_csv(filename)
+    return df
+
+
+
 if __name__=="__main__":
-    load_data_from_alpha_vantage(start_date=datetime.date(2024, 1, 1), end_date=datetime.date(2024,4,1))
+    # load_stock_data_from_alpha_vantage(data_function = "TIME_SERIES_DAILY", start_date=datetime.date(2024, 1, 1), end_date=datetime.date(2024,4,1))
+    load_day_data_yfinance(start="2020-01-01")
+    
