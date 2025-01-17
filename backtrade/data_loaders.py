@@ -49,7 +49,7 @@ def load_data_from_yfinance(ticker: str="TQQQ", interval: str="1m", start_date: 
     return data.sort_index(ascending=False)
 
 
-def load_day_data_yfinance(ticker: str="BTC-USD", start_date: datetime.date=datetime.date(2016, 1, 1), end_date: datetime.date=datetime.date(2024, 12, 31)) -> pd.DataFrame:
+def load_day_data_yfinance(ticker: str="BTC-USD", start_date: datetime.date=datetime.date(2016, 1, 1), end_date: datetime.date=datetime.date(2024, 12, 1)) -> pd.DataFrame:
     btc_ticker = yf.Ticker(ticker=ticker)
     data = pd.DataFrame(btc_ticker.history(start=start_date, end=end_date, interval="1d"))
     data = data.sort_index(ascending=True)

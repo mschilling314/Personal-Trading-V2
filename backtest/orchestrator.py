@@ -1,5 +1,6 @@
 import datetime
 import backtesting
+import numpy as np
 import pandas as pd
 from data_loaders import load_data_from_yfinance
 from data_loaders import load_stock_data_from_alpha_vantage
@@ -44,8 +45,21 @@ def orchestrate(data_specs: dict, model: backtesting.Strategy, results_directory
         print("\nBacktesting has concluded.")
         return stats, trades
 
+def sharpe_ratio(stats):
+    # Extract daily returns as a percentage
+    returns = stats['_equity_curve']['Equity'].pct_change().dropna()
+    risk_free_rate = 0.04
+    # Calculate mean and standard deviation of returns
+    mean_return = returns.mean()
+    std_dev_return = returns.std()
 
-def dca_analysis(trades):
+    # Annualize Sharpe Ratio (assuming daily data with 252 trading days)
+    sharpe_ratio = (mean_return - risk_free_rate) / std_dev_return * np.sqrt(len(returns))
+    return sharpe_ratio
+
+
+
+def dca_analysis(trades, stats):
     total_investment = len(trades) * 1000 # slightly off
     current_equity = trades["Size"].iloc[-1] * trades["ExitPrice"].iloc[-1]
     total_return = round(current_equity/total_investment, 2)
@@ -54,34 +68,40 @@ def dca_analysis(trades):
     finish = trades["ExitTime"].iloc[-1].strftime('%Y-%m-%d')
     print(f"Analysis ran from approximately {start} to {finish}")
     print(f"The total invested was ${total_investment}.\nThe final value of these investments was ${current_equity}\nThe total return was {total_return}x.\nThe annualized return was {annualized_return}%.\n")
+    print(f"The Sharpe Ratio was {sharpe_ratio(stats)}")
 
 
 if __name__=="__main__":
-    starting_date = datetime.date(2023, 1, 1)
+    starting_date = datetime.date(2023, 9, 1)
     # data_specs = {"loader": load_stock_data_from_alpha_vantage, "ticker": "TQQQ", "interval": "1min", "start_date": datetime.date(2024,1,1), "end_date": datetime.date(2024,10,1)}
     print("Analysis for Bitcoin.")
     data_specs = {"loader": load_day_data_yfinance, "loader_args": {"ticker": "BTC-USD", "start_date": starting_date}}
-    _, trades = orchestrate(data_specs=data_specs, model=DollarCostAverage)
-    dca_analysis(trades=trades)
+    stats, trades = orchestrate(data_specs=data_specs, model=DollarCostAverage)
+    dca_analysis(trades=trades, stats=stats)
 
     print("Analysis for ETH.")
     data_specs = {"loader": load_day_data_yfinance, "loader_args": {"ticker": "ETH-USD", "start_date": starting_date}}
-    _, trades = orchestrate(data_specs=data_specs, model=DollarCostAverage)
-    dca_analysis(trades=trades)
+    stats, trades = orchestrate(data_specs=data_specs, model=DollarCostAverage)
+    dca_analysis(trades=trades, stats=stats)
 
     print("Analysis for SPY.")
     data_specs = {"loader": load_day_data_yfinance, "loader_args": {"ticker": "SPY", "start_date": starting_date}}
-    _, trades = orchestrate(data_specs=data_specs, model=DollarCostAverage)
-    dca_analysis(trades=trades)
+    stats, trades = orchestrate(data_specs=data_specs, model=DollarCostAverage)
+    dca_analysis(trades=trades, stats=stats)
 
     print("Analysis for QQQ.")
     data_specs = {"loader": load_day_data_yfinance, "loader_args": {"ticker": "QQQ", "start_date": starting_date}}
-    _, trades = orchestrate(data_specs=data_specs, model=DollarCostAverage)
-    dca_analysis(trades=trades)
+    stats, trades = orchestrate(data_specs=data_specs, model=DollarCostAverage)
+    dca_analysis(trades=trades, stats=stats)
 
     print("Analysis for TQQQ.")
     data_specs = {"loader": load_day_data_yfinance, "loader_args": {"ticker": "TQQQ", "start_date": starting_date}}
-    _, trades = orchestrate(data_specs=data_specs, model=DollarCostAverage)
-    dca_analysis(trades=trades)
+    stats, trades = orchestrate(data_specs=data_specs, model=DollarCostAverage)
+    dca_analysis(trades=trades, stats=stats)
+
+    print("Analysis for FZROX.")
+    data_specs = {"loader": load_day_data_yfinance, "loader_args": {"ticker": "FZROX", "start_date": starting_date}}
+    stats, trades = orchestrate(data_specs=data_specs, model=DollarCostAverage)
+    dca_analysis(trades=trades, stats=stats)
 
     
